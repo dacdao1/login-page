@@ -16,14 +16,44 @@
           </div>
         </div>
       </div>
-      <form class="sign-up" action="#">
-        <h2>Create login</h2>
-        <div>Use your email for registration</div>
-        <input type="text" placeholder="Name" />
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <button>Sign Up</button>
-      </form>
+
+      <div v-if="isSignUp == false">
+        <form class="sign-up" action="#">
+          <h2>Create login</h2>
+          <div>Use your email for registration</div>
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Password" />
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+            <div class="row">
+
+        <div class="col-xs-6"><label class="btn btn-secondary active">
+        <input type="radio" name="options" id="option1" checked> Retailer
+        </label></div>
+        <div class="col-xs-6"><label class="btn btn-secondary">
+        <input type="radio" name="options" id="option2"> Consumer
+        </label></div>
+        </div>
+
+
+
+
+        </div>
+
+
+          <button v-on:click="setNewValue()">Sign Up</button>
+        </form>
+</div>
+<div v-else-if="isSignUp == true">
+  <form class="sign-up" action="#">
+    <h2>Thank you for signing up to our service. Please wait for an email confirmation.</h2>
+
+
+
+
+  
+  </form>
+</div>
       <form class="sign-in" action="#">
         <h2>Sign In</h2>
         <div>Use your account</div>
@@ -41,14 +71,44 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
+import AWS from "aws-sdk"
+AWS.config.region = "us-east-1"
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  IdentityPoolID: "us-east-1:"
+})
 export default {
   name: 'App',
   data: () => {
     return {
-      signUp: false
-    }
+      signUp: false,
+      credentials: null,
+      isSignUp: false,
+    };
+  },
+  methods: {
+    setNewValue: function () {
+                this.isSignUp = true;
+            }
+    // console.log("in getCredentials()");
+    //
+    // var promise = AWS.config.credentials.getPromise();
+    // promise.then(
+    //   function() {
+    //     console.log("result...")
+    //     var creds: {
+    //       accessKeyId: AWS.config.credentials.accessKeyId,
+    //       secretAccessKey: AWS.config.credentials.secrectAccessKey,
+    //       sessionToken: AWS.config.credentials.sessionToken
+    //     };
+    //     console.log("got credentials: " +JSON.stringify(creds, null, 2));
+    //     return creds;
+    //   },
+    //   function(err){
+    //     console.log("err... " + JSON.stringify(err, null, 2));
+    //     return null;
+    //   }
+    // )
   }
 }
 </script>
