@@ -1,114 +1,110 @@
 <template>
   <div id="app">
-  <article>
-    <div class="container" :class="{'sign-up-active' : signUp}">
-      <div class="overlay-container">
-        <div class="overlay">
-          <div class="overlay-left">
-            <h2>Welcome Back!</h2>
-            <p>Please login with your personal info</p>
-            <button class="invert" id="signIn" @click="signUp = !signUp">Sign In</button>
+    <article>
+      <div class="container" :class="{'sign-up-active' : signUp}">
+        <div class="overlay-container">
+          <div class="overlay">
+            <div class="overlay-left">
+              <h2>Welcome Back!</h2>
+              <p>Please login with your personal info</p>
+              <button class="invert" id="signIn" @click="signUp = !signUp">Sign In</button>
+            </div>
+            <div class="overlay-right">
+              <h2>Hello, Friend!</h2>
+              <p>Please enter your personal details</p>
+              <button class="invert" id="signUp" @click="signUp = !signUp">Sign Up</button>
+            </div>
           </div>
-          <div class="overlay-right">
-            <h2>Hello, Friend!</h2>
-            <p>Please enter your personal details</p>
-            <button class="invert" id="signUp" @click="signUp = !signUp">Sign Up</button>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="isSignUp == false">
-        <form class="sign-up" action="#">
-          <h2>Create login</h2>
-          <div>Use your email for registration</div>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-
-            <div class="row">
-
-        <div class="col-xs-6"><label class="btn btn-secondary active">
-        <input type="radio" name="options" id="option1" checked> Retailer
-        </label></div>
-        <div class="col-xs-6"><label class="btn btn-secondary">
-        <input type="radio" name="options" id="option2"> Consumer
-        </label></div>
         </div>
 
 
-
-
-        </div>
-
-
-          <button v-on:click="setNewValue()">Sign Up</button>
-        </form>
-</div>
-<div v-else-if="isSignUp == true">
-  <form class="sign-up" action="#">
-    <h2>Thank you for signing up to our service. Please wait for an email confirmation.</h2>
-
-
-
-
-  
+<div v-if="settingPage===false">
+  <form class="sign-up" action="#" method="post" @submit.prevent="submit">
+    <h2>Create login</h2>
+    <div>Use your email for registration</div>
+    <input type="email" placeholder="Email" v-model="signUpEmail"/>
+    <input type="password" placeholder="Password" v-model="signUpPassword"/>
+    <button type="submit">Sign Up</button>
   </form>
 </div>
-      <form class="sign-in" action="#">
-        <h2>Sign In</h2>
-        <div>Use your account</div>
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <a href="#">Forgot your password?</a>
-        <button>Sign In</button>
-      </form>
-    </div>
-  </article>
+
+<div v-else-if="settingPage===true">
+  <form class="sign-up" action="#">
+    <h2>Thank you for signing up to our service. Please wait for an email confirmation. </h2>
+  </form>
+</div>
+
+
+
+
+
+
+        <form class="sign-in" action="#">
+          <h2>Sign In</h2>
+          <div>Use your account</div>
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Password" />
+          <a href="#">Forgot your password?</a>
+          <button type="button" @click="gotosite('https://setting.freeingreturns.com')">Sign In</button>
+        </form>
+      </div>
+    </article>
 
   <!-- Youtube Link -->
-  <a id="yt_link" target="_blank" href="https://www.freeingreturns.com">Return to Homepage</a>
+  <a id="yt_link" href="https://www.google.com">Return to Homepage</a>
 </div>
+
+
 </template>
 
 <script>
+import axios from "axios"
 
-import AWS from "aws-sdk"
-AWS.config.region = "us-east-1"
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolID: "us-east-1:"
-})
 export default {
   name: 'App',
   data: () => {
     return {
       signUp: false,
       credentials: null,
-      isSignUp: false,
+      settingPage: false,
+      emailInfo: '',
+      signUpEmail: '',
+      signUpPassword: '',
     };
   },
+  created() {
+     window.addEventListener('beforeunload', this.storeData)
+    },
   methods: {
-    setNewValue: function () {
-                this.isSignUp = true;
-            }
-    // console.log("in getCredentials()");
-    //
-    // var promise = AWS.config.credentials.getPromise();
-    // promise.then(
-    //   function() {
-    //     console.log("result...")
-    //     var creds: {
-    //       accessKeyId: AWS.config.credentials.accessKeyId,
-    //       secretAccessKey: AWS.config.credentials.secrectAccessKey,
-    //       sessionToken: AWS.config.credentials.sessionToken
-    //     };
-    //     console.log("got credentials: " +JSON.stringify(creds, null, 2));
-    //     return creds;
-    //   },
-    //   function(err){
-    //     console.log("err... " + JSON.stringify(err, null, 2));
-    //     return null;
-    //   }
-    // )
+  gotosite(producturl){window.location = producturl},
+submit(){
+if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail,password: this.signUpPassword})
+          .then(res => {
+          this.settingPage=true;
+
+          })
+          .catch(err => {// catch error
+          });}
+else if(!this.signUpEmail){alert("Please enter an email")}
+else if(!this.signUpPassword){alert("Please enter password")}
+else{alert("Please enter both email and password to sign up")}
+},
+toSettingPage(){
+this.settingPage = true;
+},
+          storeData() {
+                  if (window.performance && this.signUpEmail.includes("@")) {
+                    axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail})
+                              .then(res => {
+                              console.log(res.status);
+                              })
+                              .catch(err => {// catch error
+                              });
+                  }
+                    if (window.performance.navigation.type != 1) {
+                      alert("closing the browser")
+                    }
+          }
   }
 }
 </script>
