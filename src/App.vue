@@ -79,7 +79,7 @@
     </article>
 
   <!-- Youtube Link -->
-  <a id="yt_link" href="https://www.google.com">Return to Homepage</a>
+  <a id="yt_link" href="https://demo.freeingreturns.com">Return to Homepage</a>
 </div>
 
 
