@@ -19,12 +19,26 @@
 
 
 <div v-if="settingPage===false">
-  <form class="sign-up" action="#" method="post" @submit.prevent="submit">
+  <form class="sign-up" action="#" method="post" @submit.prevent="submitSignUp()">
     <h2>Create login</h2>
-    <div>Use your email for registration</div>
+    <div v-if="this.enterCorrectPassword===true">
+      Use your email for registration
+    </div>
+    <div v-else style="color: red">Please enter a password</div>
     <input type="email" placeholder="Email" v-model="signUpEmail"/>
     <input type="password" placeholder="Password" v-model="signUpPassword"/>
-    <button type="submit">Sign Up</button>
+
+<div>
+  Please select from below
+</div>
+    <select v-model="selectedUserType">
+
+  <option>Retailer</option>
+  <option>Consumer</option>
+
+</select>
+
+    <button type="submit" @click="submitSignUp()">Sign Up</button>
   </form>
 </div>
 
@@ -38,15 +52,29 @@
 
 
 
+<div v-if="this.emailConfirm==true">
+  <form  class="sign-in" action="#">
+    <h2>Sign In</h2>
+    <div v-if="this.correctSignIn==true">Use your account</div>
+    <div v-else style="color: red">Please enter the correct email and password</div>
+    <input type="email" placeholder="Email" v-model="signInEmail"/>
+    <input type="password" placeholder="Password" v-model="signInPassword"/>
+    <a href="#">Forgot your password?</a>
+    <button type="submit" @click="submitSignIn()">Sign In</button>
+  </form>
+</div>
+<div v-else>
+  <form  class="sign-in" action="#">
+    <h2>Please enter the confirmation code</h2>
 
-        <form class="sign-in" action="#">
-          <h2>Sign In</h2>
-          <div>Use your account</div>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <a href="#">Forgot your password?</a>
-          <button type="button" @click="gotosite('https://setting.freeingreturns.com')">Sign In</button>
-        </form>
+
+    <input  placeholder="Confirmation Code" v-model="confirmCode"/>
+
+    <button type="submit" @click="submitSignInConfirmation()">Confirm</button>
+  </form>
+</div>
+
+
       </div>
     </article>
 
@@ -59,7 +87,8 @@
 
 <script>
 import axios from "axios"
-
+import CryptoJS from "crypto-js"
+import sgMail from '@sendgrid/mail'
 export default {
   name: 'App',
   data: () => {
@@ -70,30 +99,56 @@ export default {
       emailInfo: '',
       signUpEmail: '',
       signUpPassword: '',
+      signInEmail: '',
+      signInPassword: '',
+      enterCorrectEmail: true,
+      enterCorrectPassword: true,
+      enterNothingCorrect: true,
+      hashPass:'',
+      correctSignIn: true,
+      emailConfirm:true,
+      emailConfirmed: 'false',
+      randomNumber:'',
+      emailCon: false,
+      settingP: false,
+      selectedUserType: 'Retailer',
+      confirmCode:'' ,
+      signInEmailHidden: '',
+      signInPasswordHidden: '',
+      userID: '',
     };
   },
   created() {
      window.addEventListener('beforeunload', this.storeData)
     },
   methods: {
-  gotosite(producturl){window.location = producturl},
-submit(){
-if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail,password: this.signUpPassword})
+
+submitSignUp(){
+  this.randomNumber = Math.floor(100000 + Math.random() * 900000);
+if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail,password: this.signUpPassword, emailConfirmation: this.emailCon, settingsPage: this.settingP, confirmationCode: this.randomNumber, userType: this.selectedUserType})
           .then(res => {
           this.settingPage=true;
-
+          sgMail.setApiKey('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');
+const msg = {
+  to: 'dacdao01@gmail.com',
+  from: 'dacdao01@gmail.com',
+  subject: 'Sending with Twilio SendGrid is Fun',
+  text: 'and easy to do anywhere, even with Node.js',
+  html: '<strong>and easy to do anywhere, even with Node.js</strong>' +this.randomNumber,
+};
+sgMail.send(msg);
           })
           .catch(err => {// catch error
           });}
-else if(!this.signUpEmail){alert("Please enter an email")}
-else if(!this.signUpPassword){alert("Please enter password")}
-else{alert("Please enter both email and password to sign up")}
+else if(!this.signUpEmail){this.enterCorrectEmail = false}
+else if(!this.signUpPassword){this.enterCorrectPassword= false}
+else{this.enterNothingCorrect=false}
 },
 toSettingPage(){
 this.settingPage = true;
 },
-          storeData() {
-                  if (window.performance && this.signUpEmail.includes("@")) {
+storeData() {
+                    if (window.performance && this.signUpEmail.includes("@")) {
                     axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail})
                               .then(res => {
                               console.log(res.status);
@@ -104,7 +159,51 @@ this.settingPage = true;
                     if (window.performance.navigation.type != 1) {
                       alert("closing the browser")
                     }
-          }
+          },
+submitSignInConfirmation(){
+
+if (this.confirmCode){
+  axios.get('https://devapi.freeingreturns.com/register/users')
+            .then(res => {
+              for(var i = 0; i < res.data.users.length; i++) {
+      if (res.data.users[i].id == this.userID && res.data.users[i].confirmationCode == this.confirmCode) {
+        axios.post('https://devapi.freeingreturns.com/register', {id: this.userID, emailConfirmation: true})
+          break;
+      }
+
+  }
+
+
+            })
+            .catch(err => {// catch error
+            });
+}
+
+},
+submitSignIn(){
+
+if (this.signInEmail && this.signInPassword){
+  axios.get('https://devapi.freeingreturns.com/register/users')
+            .then(res => {
+              for(var i = 0; i < res.data.users.length; i++) {
+      if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 1) {
+
+          window.location.href = 'https://setting.freeingreturns.com/';
+          break;
+      } else if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 0){
+        this.userID = res.data.users[i].id;
+        this.emailConfirm = false;
+      }
+
+  }
+
+
+            })
+            .catch(err => {// catch error
+            });
+}
+
+}
   }
 }
 </script>
