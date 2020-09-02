@@ -171,7 +171,7 @@ storeData() {
                               });
                   }
                     if (window.performance.navigation.type != 1) {
-                      alert("closing the browser")
+
                     }
           },
 submitSignInConfirmation(){
@@ -198,14 +198,12 @@ if (this.confirmCode){
 },
 submitSignIn(){
 
-// this.$cookie.set('test', 'Hello world!', 1);
-
 if (this.signInEmail && this.signInPassword){
   axios.get('https://devapi.freeingreturns.com/user/getAllUsers')
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 1) {
-          this.$cookie.set('true', res.data.users[i].id, 1);
+          this.$cookie.set('test', 'hello', {expires: 1, domain: 'https://setting.freeingreturns.com/'});
           window.location.href = 'https://test.freeingreturns.com/';
           break;
       }
