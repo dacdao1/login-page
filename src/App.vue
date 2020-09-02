@@ -88,6 +88,8 @@
 <script>
 import axios from "axios"
 import CryptoJS from "crypto-js"
+import emailjs from 'emailjs-com';
+
 export default {
   name: 'App',
   data: () => {
@@ -123,47 +125,29 @@ export default {
   methods: {
 
 submitSignUp(){
-this.randomNumber = Math.floor(100000 + Math.random() * 900000);
-  var data = JSON.stringify({"personalizations":[{"to":[{"email":this.signUpEmail}],"subject":"test email"}],"from":{"email":"admin@freeingreturns.com","name":"Admin"},"content":[{"type":"text/html","value":"<h1>Thank you for signing up with Freeing Returns</h1> <br/> <p>Please use the confirmation code below to finish your sign up.</p> <br/>" + this.randomNumber + "<br/> <p>Use the confirmation code in while signing in.</p>"}]});
 
-var config = {
-  method: 'post',
-  url: 'https://api.sendgrid.com/v3/mail/send',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer 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'
-  },
-  data : data
-};
+  this.randomNumber = Math.floor(100000 + Math.random() * 900000);
+if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/user/register', {email: this.signUpEmail,password: this.signUpPassword, emailConfirmation: this.emailCon, settingsPage: this.settingP, confirmationCode: this.randomNumber, userType: this.selectedUserType})
+          .then(res => {
+          this.settingPage=true;
 
-axios(config)
-.then(function (response) {
-  console.log(JSON.stringify(response.data));
-})
-.catch(function (error) {
-  console.log(error);
-});
-//   this.randomNumber = Math.floor(100000 + Math.random() * 900000);
-// if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/user/register', {email: this.signUpEmail,password: this.signUpPassword, emailConfirmation: this.emailCon, settingsPage: this.settingP, confirmationCode: this.randomNumber, userType: this.selectedUserType})
-//           .then(res => {
-//           this.settingPage=true;
-//           var data = JSON.stringify({"personalizations":[{"to":[{"email":this.signUpEmail}],"subject":"test email"}],"from":{"email":"admin@freeingreturns.com","name":"Admin"},"content":[{"type":"text/html","value":"<h1>Thank you for signing up with Freeing Returns</h1> <br/> <p>Please use the confirmation code below to finish your sign up.</p> <br/>" + this.randomNumber + "<br/> <p>Use the confirmation code in while signing in.</p>"}]});
-//
-//         var config = {
-//           method: 'post',
-//           url: 'https://api.sendgrid.com/v3/mail/send',
-//           headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Bearer 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'
-//           },
-//           data : data
-//         };
-//           })
-//           .catch(err => {// catch error
-//           });}
-// else if(!this.signUpEmail){this.enterCorrectEmail = false}
-// else if(!this.signUpPassword){this.enterCorrectPassword= false}
-// else{this.enterNothingCorrect=false}
+
+          emailjs.send("service_1oxf95z","template_7mx0mxa",{
+            to_name: this.signUpEmail,
+            message: this.randomNumber,
+            to_email: this.signUpEmail,
+          }, 'user_ofc9uJNDqOApIyNO7eY0Q')
+                  .then((result) => {
+                      console.log('SUCCESS!', result.status, result.text);
+                  }, (error) => {
+                      console.log('FAILED...', error);
+                  });
+          })
+          .catch(err => {// catch error
+          });}
+else if(!this.signUpEmail){this.enterCorrectEmail = false}
+else if(!this.signUpPassword){this.enterCorrectPassword= false}
+else{this.enterNothingCorrect=false}
 },
 toSettingPage(){
 this.settingPage = true;
@@ -188,7 +172,7 @@ if (this.confirmCode){
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].id == this.userID && res.data.users[i].confirmationCode == this.confirmCode) {
-        axios.post('https://devapi.freeingreturns.com/register', {id: this.userID, emailConfirmation: true})
+        axios.put('https://devapi.freeingreturns.com/user/email', {id: this.userID, emailConfirmation: true})
           break;
       }
 
@@ -202,7 +186,8 @@ if (this.confirmCode){
 
 },
 submitSignIn(){
-console.log(process.env.VUE_APP_SENDGRID_API_KEY)
+
+
 if (this.signInEmail && this.signInPassword){
   axios.get('https://devapi.freeingreturns.com/register/users')
             .then(res => {
