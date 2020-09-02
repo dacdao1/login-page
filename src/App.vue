@@ -208,7 +208,8 @@ if (this.signInEmail && this.signInPassword){
           this.$cookie.set('true', res.data.users[i].id, 1);
           window.location.href = 'https://test.freeingreturns.com/';
           break;
-      } else if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 0){
+      }
+      if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 0){
         this.userID = res.data.users[i].id;
         this.emailConfirm = false;
       }
