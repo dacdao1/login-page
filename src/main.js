@@ -5,6 +5,7 @@ import App from './App.vue'
 // import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueRouter from 'vue-router'
 import VueCookie from 'vue-cookie'
+import './registerServiceWorker'
 Vue.config.productionTip = false
 // Vue.use(BootstrapVue);
 Vue.use(VueRouter);
