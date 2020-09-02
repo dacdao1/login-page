@@ -182,7 +182,7 @@ if (this.confirmCode){
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].id == this.userID && res.data.users[i].confirmationCode == this.confirmCode) {
         axios.put('https://devapi.freeingreturns.com/user/email', {id: this.userID, emailConfirmation: true}).then(res=>{console.log("works")}).catch(err=>{console.log(err.data)})
-          this.$cookie.set('true', this.userID, 1);
+            this.$cookie.set('test', res.data.users[i].id, {expires: 1, domain: '.freeingreturns.com'});
           window.location.href = 'https://setting.freeingreturns.com/';
           break;
       }
@@ -203,8 +203,8 @@ if (this.signInEmail && this.signInPassword){
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 1) {
-          this.$cookie.set('test', 'hello', {expires: 1, domain: '.freeingreturns.com'});
-          window.location.href = 'https://setting.freeingreturns.com/';
+          this.$cookie.set('test', res.data.users[i].email, {expires: 1, domain: '.freeingreturns.com'});
+          window.location.href = 'https://test.freeingreturns.com/';
           break;
       }
       if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 0){
