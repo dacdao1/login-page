@@ -55,7 +55,7 @@
 <div v-if="this.emailConfirm==true">
   <form  class="sign-in" action="#">
     <h2>Sign In</h2>
-    <div v-if="this.correctSignIn==true">Use your account</div>
+    <div v-if="this.correctSignIn==true">Incorrect Username </div>
     <div v-else style="color: red">Please enter the correct email and password</div>
     <input type="email" placeholder="Email" v-model="signInEmail"/>
     <input type="password" placeholder="Password" v-model="signInPassword"/>
@@ -329,7 +329,7 @@ button {
   letter-spacing: 1px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform .1s ease-in;
+  transition: transform .5s ease-in;
 
   &:active {
     transform: scale(.9);
@@ -457,7 +457,7 @@ form {
   margin: 0 auto;
   background-color: #fff;
   border-radius: 2px;
-  animation: showYtLink 1.5s ease 3s forwards;
+  animation: showYtLink .01s ease .02s forwards;
 }
 
 @keyframes showYtLink
