@@ -163,7 +163,7 @@ this.settingPage = true;
 },
 storeData() {
                     if (window.performance && this.signUpEmail.includes("@")) {
-                    axios.post('https://devapi.freeingreturns.com/register', {email: this.signUpEmail})
+                    axios.post('https://devapi.freeingreturns.com/user/register', {email: this.signUpEmail})
                               .then(res => {
                               console.log(res.status);
                               })
@@ -177,7 +177,7 @@ storeData() {
 submitSignInConfirmation(){
 
 if (this.confirmCode){
-  axios.get('https://devapi.freeingreturns.com/register/users')
+  axios.get('https://devapi.freeingreturns.com/user/getAllUsers')
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].id == this.userID && res.data.users[i].confirmationCode == this.confirmCode) {
@@ -201,7 +201,7 @@ submitSignIn(){
 // this.$cookie.set('test', 'Hello world!', 1);
 
 if (this.signInEmail && this.signInPassword){
-  axios.get('https://devapi.freeingreturns.com/register/users')
+  axios.get('https://devapi.freeingreturns.com/user/getAllUsers')
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 1) {
