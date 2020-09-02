@@ -88,8 +88,9 @@
 <script>
 import axios from "axios"
 import CryptoJS from "crypto-js"
-import emailjs from 'emailjs-com';
+import emailjs from 'emailjs-com'
 
+import { isEnabled, get, set, remove } from 'tiny-cookie'
 export default {
   name: 'App',
   data: () => {
@@ -127,7 +128,15 @@ export default {
 submitSignUp(){
 
   this.randomNumber = Math.floor(100000 + Math.random() * 900000);
-if (this.signUpEmail && this.signUpPassword){axios.post('https://devapi.freeingreturns.com/user/register', {email: this.signUpEmail,password: this.signUpPassword, emailConfirmation: this.emailCon, settingsPage: this.settingP, confirmationCode: this.randomNumber, userType: this.selectedUserType})
+if (this.signUpEmail && this.signUpPassword){
+  axios.post('https://devapi.freeingreturns.com/user/register', {
+    email: this.signUpEmail,
+    password: this.signUpPassword,
+    emailConfirmation: this.emailCon,
+    settingsPage: this.settingP,
+    confirmationCode: this.randomNumber,
+    userType: this.selectedUserType
+  })
           .then(res => {
           this.settingPage=true;
 
@@ -172,7 +181,9 @@ if (this.confirmCode){
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].id == this.userID && res.data.users[i].confirmationCode == this.confirmCode) {
-        axios.put('https://devapi.freeingreturns.com/user/email', {id: this.userID, emailConfirmation: true})
+        axios.put('https://devapi.freeingreturns.com/user/email', {id: this.userID, emailConfirmation: true}).then(res=>{console.log("works")}).catch(err=>{console.log(err.data)})
+          this.$cookie.set('true', this.userID, 1);
+          window.location.href = 'https://setting.freeingreturns.com/';
           break;
       }
 
@@ -187,13 +198,14 @@ if (this.confirmCode){
 },
 submitSignIn(){
 
+// this.$cookie.set('test', 'Hello world!', 1);
 
 if (this.signInEmail && this.signInPassword){
   axios.get('https://devapi.freeingreturns.com/register/users')
             .then(res => {
               for(var i = 0; i < res.data.users.length; i++) {
       if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 1) {
-
+          this.$cookie.set('true', res.data.users[i].id, 1);
           window.location.href = 'https://setting.freeingreturns.com/';
           break;
       } else if (res.data.users[i].email === this.signInEmail && res.data.users[i].password == CryptoJS.MD5(this.signInPassword) && res.data.users[i].emailConfirmation == 0){
