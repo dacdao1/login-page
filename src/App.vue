@@ -38,7 +38,7 @@
 
 </select>
 
-    <button type="submit" @click="submitSignUp()">Sign Up</button>
+    <button type="submit" >Sign Up</button>
   </form>
 </div>
 
@@ -128,6 +128,7 @@ export default {
 submitSignUp(){
 
   this.randomNumber = Math.floor(100000 + Math.random() * 900000);
+
 if (this.signUpEmail && this.signUpPassword){
   axios.post('https://devapi.freeingreturns.com/user/register', {
     email: this.signUpEmail,
