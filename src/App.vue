@@ -10,8 +10,8 @@
               <button class="invert" id="signIn" @click="signUp = !signUp">Sign In</button>
             </div>
             <div class="overlay-right">
-              <h2>Hello, Friend!</h2>
-              <p>Please enter your personal details</p>
+              <h2>First time user?</h2>
+              <p>Please click the button below to sign up with us.</p>
               <button class="invert" id="signUp" @click="signUp = !signUp">Sign Up</button>
             </div>
           </div>
@@ -26,7 +26,11 @@
     </div>
     <div v-else style="color: red">Please enter a password</div>
     <input type="email" placeholder="Email" v-model="signUpEmail"/>
-    <input type="password" placeholder="Password" v-model="signUpPassword"/>
+    <input type="password" placeholder="Password" v-model.trim="$v.signUpPassword.$model"/>
+    <div class="error" v-if="!$v.signUpPassword.required" style="font-size: 10px">Password is required</div>
+  <div class="error" v-if="!$v.signUpPassword.minLength" style="font-size: 10px">Password must have at least {{$v.signUpPassword.$params.minLength.min}} letters.</div>
+
+
 
 <div>
   Please select from below
@@ -55,21 +59,34 @@
 <div v-if="this.emailConfirm==true">
   <form  class="sign-in" action="#">
     <h2>Sign In</h2>
-    <div v-if="this.correctSignIn==true">Incorrect Username </div>
-    <div v-else style="color: red">Please enter the correct email and password</div>
+    <div v-if="this.correctSignIn==true">Enter username and password </div>
+    <div v-if="this.correctSignIn==false" style="color: red">Please enter the correct email and password</div>
     <input type="email" placeholder="Email" v-model="signInEmail"/>
     <input type="password" placeholder="Password" v-model="signInPassword"/>
     <a href="#">Forgot your password?</a>
     <button type="submit" @click="submitSignIn()">Sign In</button>
+
+
+
+
+
   </form>
 </div>
+
 <div v-else>
   <form  class="sign-in" action="#">
     <h2>Please enter the confirmation code</h2>
 
 
     <input  placeholder="Confirmation Code" v-model="confirmCode"/>
+    <div>
+      <a href="#" v-popover:foo.bottom>Did not receive a confirmation code?</a>
 
+    <popover name="foo" :width="300" style="margin-left: -255px; margin-top: -80px">
+      <a>Please check your spam folder or email admin@freeingreturns.com for your confirmation code.</a>
+    </popover>
+
+    </div>
     <button type="submit" @click="submitSignInConfirmation()">Confirm</button>
   </form>
 </div>
@@ -89,7 +106,7 @@
 import axios from "axios"
 import CryptoJS from "crypto-js"
 import emailjs from 'emailjs-com'
-
+import { required, minLength } from 'vuelidate/lib/validators'
 import { isEnabled, get, set, remove } from 'tiny-cookie'
 export default {
   name: 'App',
@@ -120,9 +137,16 @@ export default {
       userID: '',
     };
   },
+
   created() {
      window.addEventListener('beforeunload', this.storeData)
     },
+    validations: {
+   signUpPassword: {
+     required,
+     minLength: minLength(8)
+   }
+ },
   methods: {
 
 submitSignUp(){
@@ -219,6 +243,8 @@ if (this.signInEmail && this.signInPassword){
             })
             .catch(err => {// catch error
             });
+}else{
+this.correctSignIn=false
 }
 
 }
