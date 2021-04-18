@@ -7,99 +7,127 @@
             <div class="overlay-left">
               <h2>Welcome Back!</h2>
               <p>Please login with your personal info</p>
-              <button class="invert" id="signIn" @click="signUp = !signUp">Sign In</button>
+              <button class="invert" id="signIn" @click="signUp = !signUp">
+                Sign In
+              </button>
             </div>
             <div class="overlay-right">
               <h2>First time user?</h2>
               <p>Please click the button below to sign up with us.</p>
-              <button class="invert" id="signUp" @click="signUp = !signUp">Sign Up</button>
+              <button class="invert" id="signUp" @click="signUp = !signUp">
+                Sign Up
+              </button>
             </div>
           </div>
         </div>
 
+        <div v-if="settingPage===false">
+          <form
+            class="sign-up"
+            action="#"
+            method="post"
+            @submit.prevent="submitSignUp()"
+          >
+            <h2>Create login</h2>
+            <div v-if="this.enterCorrectPassword===true">
+              Use your email for registration
+            </div>
+            <div v-else style="color: red">Please enter a password</div>
+            <input type="email" placeholder="Email" v-model="signUpEmail" />
+            <input
+              type="password"
+              placeholder="Password"
+              v-model.trim="$v.signUpPassword.$model"
+            />
+            <div
+              class="error"
+              v-if="!$v.signUpPassword.required"
+              style="font-size: 10px"
+            >
+              Password is required
+            </div>
+            <div
+              class="error"
+              v-if="!$v.signUpPassword.minLength"
+              style="font-size: 10px"
+            >
+              Password must have at least
+              {{$v.signUpPassword.$params.minLength.min}} letters.
+            </div>
 
-<div v-if="settingPage===false">
-  <form class="sign-up" action="#" method="post" @submit.prevent="submitSignUp()">
-    <h2>Create login</h2>
-    <div v-if="this.enterCorrectPassword===true">
-      Use your email for registration
-    </div>
-    <div v-else style="color: red">Please enter a password</div>
-    <input type="email" placeholder="Email" v-model="signUpEmail"/>
-    <input type="password" placeholder="Password" v-model.trim="$v.signUpPassword.$model"/>
-    <div class="error" v-if="!$v.signUpPassword.required" style="font-size: 10px">Password is required</div>
-  <div class="error" v-if="!$v.signUpPassword.minLength" style="font-size: 10px">Password must have at least {{$v.signUpPassword.$params.minLength.min}} letters.</div>
+            <div>Please select from below</div>
+            <select v-model="selectedUserType">
+              <option>Retailer</option>
+              <option>Consumer</option>
+            </select>
 
+            <button type="submit">Sign Up</button>
+          </form>
+        </div>
 
+        <div v-else-if="settingPage===true">
+          <form class="sign-up" action="#">
+            <h2>
+              Thank you for signing up to our service. Please wait for an email
+              confirmation.
+            </h2>
+          </form>
+        </div>
 
-<div>
-  Please select from below
-</div>
-    <select v-model="selectedUserType">
+        <div v-if="this.emailConfirm==true">
+          <form class="sign-in" action="#">
+            <h2>Sign In</h2>
+            <div v-if="this.correctSignIn==true">
+              Enter username and password
+            </div>
+            <div v-if="this.correctSignIn==false" style="color: red">
+              Please enter the correct email and password
+            </div>
+            <input type="email" placeholder="Email" v-model="signInEmail" />
+            <input
+              type="password"
+              placeholder="Password"
+              v-model="signInPassword"
+            />
+            <a href="#">Forgot your password?</a>
+            <button type="submit" @click="submitSignIn()">Sign In</button>
+          </form>
+        </div>
 
-  <option>Retailer</option>
-  <option>Consumer</option>
+        <div v-else>
+          <form class="sign-in" action="#">
+            <h2>Please enter the confirmation code</h2>
 
-</select>
+            <input placeholder="Confirmation Code" v-model="confirmCode" />
+            <div>
+              <a href="#" v-popover:foo.bottom
+                >Did not receive a confirmation code?</a
+              >
 
-    <button type="submit" >Sign Up</button>
-  </form>
-</div>
-
-<div v-else-if="settingPage===true">
-  <form class="sign-up" action="#">
-    <h2>Thank you for signing up to our service. Please wait for an email confirmation. </h2>
-  </form>
-</div>
-
-
-
-
-
-<div v-if="this.emailConfirm==true">
-  <form  class="sign-in" action="#">
-    <h2>Sign In</h2>
-    <div v-if="this.correctSignIn==true">Enter username and password </div>
-    <div v-if="this.correctSignIn==false" style="color: red">Please enter the correct email and password</div>
-    <input type="email" placeholder="Email" v-model="signInEmail"/>
-    <input type="password" placeholder="Password" v-model="signInPassword"/>
-    <a href="#">Forgot your password?</a>
-    <button type="submit" @click="submitSignIn()">Sign In</button>
-
-
-
-
-
-  </form>
-</div>
-
-<div v-else>
-  <form  class="sign-in" action="#">
-    <h2>Please enter the confirmation code</h2>
-
-
-    <input  placeholder="Confirmation Code" v-model="confirmCode"/>
-    <div>
-      <a href="#" v-popover:foo.bottom>Did not receive a confirmation code?</a>
-
-    <popover name="foo" :width="300" style="margin-left: -255px; margin-top: -80px">
-      <a>Please check your spam folder or email admin@freeingreturns.com for your confirmation code.</a>
-    </popover>
-
-    </div>
-    <button type="submit" @click="submitSignInConfirmation()">Confirm</button>
-  </form>
-</div>
-
-
+              <popover
+                name="foo"
+                :width="300"
+                style="margin-left: -255px; margin-top: -80px"
+              >
+                <a
+                  >Please check your spam folder or email
+                  admin@freeingreturns.com for your confirmation code.</a
+                >
+              </popover>
+            </div>
+            <button type="submit" @click="submitSignInConfirmation()">
+              Confirm
+            </button>
+          </form>
+        </div>
       </div>
     </article>
 
-  <!-- Youtube Link -->
-  <a id="yt_link" href="https://demo.freeingreturns.com">Return to Homepage</a>
-</div>
-
-
+    <!-- Youtube Link -->
+    <a id="yt_link" href="https://demo.freeingreturns.com"
+      >Return to Homepage</a
+    >
+  </div>
 </template>
 
 <script>
@@ -279,8 +307,7 @@ body {
   height: 480px;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, .2),
-    0 10px 10px rgba(0, 0, 0, .2);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.2);
   background: linear-gradient(to bottom, #efefef, #ccc);
 
   .overlay-container {
@@ -290,7 +317,7 @@ body {
     width: 50%;
     height: 100%;
     overflow: hidden;
-    transition: transform .5s ease-in-out;
+    transition: transform 0.5s ease-in-out;
     z-index: 100;
   }
 
@@ -299,10 +326,10 @@ body {
     left: -100%;
     height: 100%;
     width: 200%;
-    background: linear-gradient(to bottom right, white, #0AA8ED);
+    background: linear-gradient(to bottom right, white, #0aa8ed);
     color: #fff;
     transform: translateX(0);
-    transition: transform .5s ease-in-out;
+    transition: transform 0.5s ease-in-out;
   }
 
   @mixin overlays($property) {
@@ -317,7 +344,7 @@ body {
     height: calc(100% - 140px);
     text-align: center;
     transform: translateX($property);
-    transition: transform .5s ease-in-out;
+    transition: transform 0.5s ease-in-out;
   }
 
   .overlay-left {
@@ -347,8 +374,8 @@ a {
 
 button {
   border-radius: 20px;
-  border: 1px solid #0AA8ED;
-  background-color: #0AA8ED;
+  border: 1px solid #0aa8ed;
+  background-color: #0aa8ed;
   color: #fff;
   font-size: 1rem;
   font-weight: bold;
@@ -356,10 +383,10 @@ button {
   letter-spacing: 1px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform .5s ease-in;
+  transition: transform 0.5s ease-in;
 
   &:active {
-    transform: scale(.9);
+    transform: scale(0.9);
   }
 
   &:focus {
@@ -384,7 +411,7 @@ form {
   height: calc(100% - 180px);
   text-align: center;
   background: linear-gradient(to bottom, #efefef, #ccc);
-  transition: all .5s ease-in-out;
+  transition: all 0.5s ease-in-out;
 
   div {
     font-size: 1rem;
@@ -398,8 +425,7 @@ form {
     width: calc(100% - 30px);
     border-radius: 15px;
     border-bottom: 1px solid #ddd;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4),
-      0 -1px 1px #fff,
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4), 0 -1px 1px #fff,
       0 1px 0 #fff;
     overflow: hidden;
 
@@ -430,7 +456,7 @@ form {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
-    animation: show .5s;
+    animation: show 0.5s;
   }
 
   .overlay-container {
@@ -465,10 +491,8 @@ form {
   }
 }
 
-
 /* Youtube Link */
-#yt_link
-{
+#yt_link {
   position: absolute;
   right: 0;
   left: 0;
@@ -484,13 +508,15 @@ form {
   margin: 0 auto;
   background-color: #fff;
   border-radius: 2px;
-  animation: showYtLink .01s ease .02s forwards;
+  animation: showYtLink 0.01s ease 0.02s forwards;
 }
 
-@keyframes showYtLink
-{
-  0%{ bottom: -200px; }
-  100%{ bottom: 20px; }
+@keyframes showYtLink {
+  0% {
+    bottom: -200px;
+  }
+  100% {
+    bottom: 20px;
+  }
 }
-
 </style>
