@@ -9,7 +9,7 @@
 6. Firebase for database.
 7. PWA
 
-<img align="center" width="1000" height="500" src="front_view.PNG" alt="Front view of the software" />
+<img align="center" width="1000" height="500" src="readme/front_view.PNG" alt="Front view of the software" />
 
 ## About
 
