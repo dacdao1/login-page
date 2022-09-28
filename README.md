@@ -13,7 +13,7 @@
 
 ## About
 
-https://login.freeingreturns.com/
+https://login-page-freeing-returns.netlify.app/
 
 This is a simple web application that I code manually for access point to the Freeing Returns software. The main logic of the application is the signup section. Users will enter their information into the form and the form will then submit the users info. to the firebase database. If users was to not complete the sign up section and leave the page, the form will still automatically submit the data to the database. Once users submit the form, an email will be sent from a server to that user with a confirmation code. User can use the confirmation code to sign in to use the Freeing Returns software. 
 
